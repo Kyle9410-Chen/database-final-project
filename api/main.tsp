@@ -58,7 +58,7 @@ namespace API {
   }
 
   @doc("Request model for submitting a form response")
-  model CreateFormAnswerRequest {
+  model CreateFormAnswersRequest {
     answers: AnswerRequest[];
   }
 
@@ -78,12 +78,12 @@ namespace API {
   op createForm(@body body: CreateFormRequest): Form;
 
   @doc("Get all responses for a specific form")
-  @route("/forms/{id}/responses")
+  @route("/forms/{id}/answers")
   @get
-  op getFormResponses(id: string): FormAnswers[];
+  op getFormAnswers(id: string): FormAnswers[];
 
   @doc("Submit a response to a specific form")
-  @route("/forms/{id}/responses")
+  @route("/forms/{id}/answers")
   @post
-  op submitFormResponse(id: string, @body body: CreateFormAnswerRequest): void;
+  op submitFormAnswer(id: string, @body body: CreateFormAnswersRequest): void;
 }
