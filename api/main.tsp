@@ -5,8 +5,9 @@ using Http;
 @service
 @route("/api")
 namespace API {
-  model FormQuestionResponse {
-    id: string;
+  @doc("A question in a form")
+  model QuestionResponse {
+    question_id: string;
     type: "short_answer" | "select" | "multiple_select";
     is_required: boolean;
     question_text: string;
@@ -15,7 +16,8 @@ namespace API {
     options?: string[];
   }
 
-  model FormQuestionRequest {
+  @doc("Request model for creating a new form question")
+  model QuestionRequest {
     type: "short_answer" | "select" | "multiple_select";
     is_required: boolean;
     question_text: string;
@@ -24,33 +26,64 @@ namespace API {
     options?: string[];
   }
 
-  model FormAnswerRequest {
+  @doc("A form with multiple questions")
+  model Form {
+    title: string;
+    form_id: string;
+    questions: QuestionResponse[];
+  }
+
+  @doc("Request model for creating a new form")
+  model CreateFormRequest {
+    title: string;
+    questions: QuestionRequest[];
+  }
+
+  @doc("An answer to a form question")
+  model AnswerRequest {
     question_id: string;
     answer_text?: string;
     answer_options?: numeric[];
   }
 
-  model FormAnswerResponse extends FormQuestionResponse {
+  @doc("A user's response to a question in a form")
+  model AnswerResponse extends QuestionResponse {
     answer_text?: string;
     answer_options?: numeric[];
   }
 
+  @doc("A user's complete response to a form")
+  model FormAnswers {
+    answers: AnswerResponse[];
+  }
+
+  @doc("Request model for submitting a form response")
+  model CreateFormAnswerRequest {
+    answers: AnswerRequest[];
+  }
+
+  @doc("Get all forms")
   @route("/forms")
   @get
-  op getAllforms(): FormQuestionResponse[];
+  op getAllforms(): Form[];
 
+  @doc("Get a form by its ID")
   @route("/forms/{id}")
   @get
-  op getFormById(id: string): FormQuestionResponse;
+  op getFormById(id: string): Form;
+
+  @doc("Create a new form")
   @route("/forms")
   @post
-  op createForm(form: FormQuestionRequest): FormQuestionResponse;
+  op createForm(@body body: CreateFormRequest): Form;
 
+  @doc("Get all responses for a specific form")
   @route("/forms/{id}/responses")
   @get
-  op getFormResponses(id: string): FormAnswerResponse[];
+  op getFormResponses(id: string): FormAnswers[];
 
+  @doc("Submit a response to a specific form")
   @route("/forms/{id}/responses")
   @post
-  op submitFormResponse(id: string, answers: FormAnswerRequest[]): void;
+  op submitFormResponse(id: string, @body body: CreateFormAnswerRequest): void;
 }
