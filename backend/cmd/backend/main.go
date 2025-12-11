@@ -3,15 +3,17 @@ package main
 import (
 	"context"
 	"database-final-project/internal/config"
+	"database-final-project/internal/database"
 	loguril "database-final-project/internal/logger"
 	"errors"
-	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -26,6 +28,16 @@ func main() {
 	cfgLog.FlashToZap(logger)
 
 	logger.Info("Starting backend server", zap.Bool("debug", cfg.Debug), zap.String("host", cfg.Host), zap.String("port", cfg.Port))
+
+	err = cfg.Validate(logger)
+	if err != nil {
+		logger.Fatal("Invalid configuration", zap.Error(err))
+	}
+
+	err = database.MigrationUp(cfg.MigrationSource, cfg.DatabaseURL, logger)
+	if err != nil {
+		logger.Fatal("Database migration failed", zap.Error(err))
+	}
 
 	mux := http.NewServeMux()
 

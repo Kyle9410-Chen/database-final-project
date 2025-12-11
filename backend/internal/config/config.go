@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"reflect"
 
@@ -12,10 +13,12 @@ import (
 )
 
 type Config struct {
-	Debug   bool   `yaml:"debug"`
-	Host    string `yaml:"host"`
-	Port    string `yaml:"port"`
-	BaseURL string `yaml:"base_url"`
+	Debug           bool   `yaml:"debug"`
+	Host            string `yaml:"host"`
+	Port            string `yaml:"port"`
+	BaseURL         string `yaml:"base_url"`
+	DatabaseURL     string `yaml:"database_url"`
+	MigrationSource string `yaml:"migration_source"`
 }
 
 type LogBuffer struct {
@@ -48,6 +51,21 @@ func (cl *LogBuffer) FlashToZap(logger *zap.Logger) {
 		logger.Warn(entry.message, fields...)
 	}
 	cl.buffer = nil
+}
+
+func (c *Config) Validate(logger *zap.Logger) error {
+	if c.DatabaseURL == "" {
+		err := fmt.Errorf("DatabaseURL must be set")
+		logger.Error("Configuration validation failed", zap.Error(err))
+		return err
+	}
+	if c.MigrationSource == "" {
+		err := fmt.Errorf("MigrationSource must be set")
+		logger.Error("Configuration validation failed", zap.Error(err))
+		return err
+	}
+
+	return nil
 }
 
 func Load() (*Config, *LogBuffer) {
@@ -104,10 +122,12 @@ func FromEnv(baseConfig *Config) (*Config, error) {
 	}
 
 	envConfig := &Config{
-		Debug:   os.Getenv("DEBUG") == "true",
-		Host:    os.Getenv("HOST"),
-		Port:    os.Getenv("PORT"),
-		BaseURL: os.Getenv("BASE_URL"),
+		Debug:           os.Getenv("DEBUG") == "true",
+		Host:            os.Getenv("HOST"),
+		Port:            os.Getenv("PORT"),
+		BaseURL:         os.Getenv("BASE_URL"),
+		DatabaseURL:     os.Getenv("DATABASE_URL"),
+		MigrationSource: os.Getenv("MIGRATION_SOURCE"),
 	}
 
 	return MergeConfigs(baseConfig, envConfig)
@@ -120,6 +140,8 @@ func FromFlags(baseConfig *Config) (*Config, error) {
 	flag.StringVar(&flagConfig.Host, "host", baseConfig.Host, "host")
 	flag.StringVar(&flagConfig.Port, "port", baseConfig.Port, "port")
 	flag.StringVar(&flagConfig.BaseURL, "base_url", baseConfig.BaseURL, "base url")
+	flag.StringVar(&flagConfig.DatabaseURL, "database_url", flagConfig.DatabaseURL, "database url")
+	flag.StringVar(&flagConfig.MigrationSource, "migration_source", baseConfig.MigrationSource, "migration source")
 
 	flag.Parse()
 
