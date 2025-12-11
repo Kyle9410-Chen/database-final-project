@@ -29,20 +29,19 @@ func ParseRequestFromBody(r *http.Request, logger *zap.Logger, s interface{}) er
 	return nil
 }
 
-func WriteResponseToBody(w http.ResponseWriter, logger *zap.Logger, statusCode int, s interface{}) error {
+func WriteResponseToBody(w http.ResponseWriter, logger *zap.Logger, statusCode int, s interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
 	responseBytes, err := json.Marshal(s)
 	if err != nil {
 		logger.Error("Failed to marshal response", zap.Error(err), zap.Any("response", s))
-		return err
+		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
 	}
 
 	_, err = w.Write(responseBytes)
 	if err != nil {
 		logger.Error("Failed to write response", zap.Error(err))
-		return err
+		http.Error(w, "Failed to write response", http.StatusInternalServerError)
 	}
-	return nil
 }
