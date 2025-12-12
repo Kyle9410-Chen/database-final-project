@@ -5,6 +5,12 @@ using Http;
 @service
 @route("/api")
 namespace API {
+  @doc("An option for select and multiple_select questions")
+  model Option {
+    option_id: numeric;
+    option_text: string;
+  }
+
   @doc("A question in a form")
   model QuestionResponse {
     question_id: string;
@@ -13,7 +19,7 @@ namespace API {
     question_text: string;
 
     @doc("Options for select and multiple_select question types")
-    options?: string[];
+    options?: Option[];
   }
 
   @doc("Request model for creating a new form question")
@@ -43,13 +49,13 @@ namespace API {
   model AnswerRequest {
     question_id: string;
     answer_text?: string;
-    answer_options?: numeric[];
+    answer_options?: Option[];
   }
 
   @doc("A user's response to a question in a form")
   model AnswerResponse extends QuestionResponse {
     answer_text?: string;
-    answer_options?: numeric[];
+    answer_options?: Option[];
   }
 
   @doc("A user's complete response to a form")
