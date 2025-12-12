@@ -2,18 +2,21 @@ import "@typespec/http";
 
 using Http;
 
+@format("uuid")
+scalar uuid extends string;
+
 @service
 @route("/api")
 namespace API {
   @doc("An option for select and multiple_select questions")
   model Option {
-    option_id: string;
+    option_id: uuid;
     option_text: string;
   }
 
   @doc("A question in a form")
   model QuestionResponse {
-    question_id: string;
+    question_id: uuid;
     type: "short_answer" | "select" | "multiple_select";
     is_required: boolean;
     question_text: string;
@@ -35,7 +38,7 @@ namespace API {
   @doc("A form with multiple questions")
   model Form {
     title: string;
-    form_id: string;
+    form_id: uuid;
     questions: QuestionResponse[];
   }
 
@@ -47,15 +50,19 @@ namespace API {
 
   @doc("An answer to a form question")
   model AnswerRequest {
-    question_id: string;
+    question_id: uuid;
     answer_text?: string;
-    answer_options?: Option[];
+
+    @doc("The ids of the selected options")
+    answer_options?: uuid[];
   }
 
   @doc("A user's response to a question in a form")
   model AnswerResponse extends QuestionResponse {
     answer_text?: string;
-    answer_options?: Option[];
+
+    @doc("The ids of the selected options")
+    answer_options?: uuid[];
   }
 
   @doc("A user's complete response to a form")
