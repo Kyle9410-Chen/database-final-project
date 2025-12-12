@@ -7,7 +7,7 @@ using Http;
 namespace API {
   @doc("An option for select and multiple_select questions")
   model Option {
-    option_id: numeric;
+    option_id: string;
     option_text: string;
   }
 
