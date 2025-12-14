@@ -4,8 +4,74 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Form Database System</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      input,
+      select,
+      textarea {
+        margin: 5px 0;
+        padding: 5px;
+      }
+      button,
+      .btn-link {
+        padding: 10px 15px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+        border-radius: 3px;
+      }
+      .btn-primary {
+        background-color: #4caf50;
+        color: white;
+      }
+      .btn-secondary {
+        background-color: #008cba;
+        color: white;
+      }
+      .btn-danger {
+        background-color: #ff4444;
+        color: white;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+      }
+      .action-buttons {
+        margin-top: 30px;
+        border-top: 2px solid #ddd;
+        padding-top: 20px;
+      }
+    </style>
   </head>
   <body>
-    <a href="/create">Create New Form</a>
+    <h1>Form Database System</h1>
+
+    <div class="card">
+      <h2>Welcome</h2>
+      <p>
+        Create and manage forms with ease. Build custom forms with various
+        question types including short answer, single select, and multiple
+        select options.
+      </p>
+    </div>
+
+    <div class="action-buttons">
+      <a href="/create" class="btn-link btn-primary">Create New Form</a>
+      <a href="#" class="btn-link btn-secondary">View All Forms</a>
+    </div>
   </body>
 </html>
