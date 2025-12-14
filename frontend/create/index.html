@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create New Form</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .question {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      input,
+      select,
+      textarea {
+        margin: 5px 0;
+        padding: 5px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+      }
+      .remove-question {
+        background-color: #ff4444;
+        color: white;
+        border: none;
+      }
+      #addQuestionBtn {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+      }
+      button[type="submit"] {
+        background-color: #008cba;
+        color: white;
+        border: none;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Create New Form</h1>
+    <form>
+      <label for="formTitle">Form Title:</label><br /><input
+        type="text"
+        id="formTitle"
+        name="formTitle"
+        required
+      />
+      <div id="questionContainer">
+        <h2>Questions</h2>
+        <div class="question">
+          <h3>Question 1</h3>
+          <label>Question:</label><br />
+          <input type="text" name="questionText" required /><br />
+
+          <label>Required:</label>
+          <input type="checkbox" name="isRequired" /><br />
+
+          <label>Type:</label>
+          <select name="questionType">
+            <option value="short_answer">Short Answer</option>
+            <option value="select">Select</option>
+            <option value="multiple_select">Multiple Select</option>
+          </select>
+
+          <div class="options" style="display: none; margin-top: 10px">
+            <label>Options:</label><br />
+            <div class="options-list">
+              <div class="option-item">
+                <input
+                  type="text"
+                  name="option"
+                  placeholder="Enter option text"
+                  required
+                />
+                <button
+                  type="button"
+                  class="remove-option"
+                  style="margin-left: 5px; padding: 2px 8px"
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="add-option"
+              style="margin-top: 5px; padding: 5px 10px"
+            >
+              Add Option
+            </button>
+          </div>
+        </div>
+        <button type="button" id="addQuestionBtn">Add Question</button>
+      </div>
+
+      <div
+        style="margin-top: 30px; border-top: 2px solid #ddd; padding-top: 20px"
+      >
+        <button type="submit">Create Form</button>
+      </div>
+    </form>
+
+    <script type="module" src="createForm.js"></script>
+  </body>
+</html>
