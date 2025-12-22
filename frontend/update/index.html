@@ -47,21 +47,24 @@
     </style>
   </head>
   <body>
-    <h1>Update Forms</h1>
-    <form>
-      <label for="formTitle">Form Title:</label><br /><input
-        type="text"
-        id="formTitle"
-        name="formTitle"
-        required
-      />
-      <div
-        style="margin-top: 30px; border-top: 2px solid #ddd; padding-top: 20px"
-      >
-        <button type="submit">Update</button>
-      </div>
-    </form>
+    <h1>Update Reply</h1>
+    <section>
+      <h2>Update Reply From Existing Forms</h2>
+      <label for="formIdForReply">Enter Form ID:</label><br />
+      <input type="text" id="formIdForReply" placeholder="e.g., 123" />
+      <button id="loadRepliesBtn" style="margin-left: 8px">Load Replies</button>
 
-    <script type="module" src="createForm.js"></script>
+      <div id="replyChooser" style="margin-top: 15px; display: none">
+        <label for="replySelect">Choose a Reply to Update:</label><br />
+        <select id="replySelect" disabled>
+          <option value="">-- Select a reply --</option>
+        </select>
+        <button id="proceedReplyUpdate" disabled style="margin-left: 8px">
+          Continue
+        </button>
+      </div>
+    </section>
+
+    <script type="module" src="updateForm.js"></script>
   </body>
 </html>
