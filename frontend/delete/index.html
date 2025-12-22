@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Delete Forms</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .question {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      input,
+      select,
+      textarea {
+        margin: 5px 0;
+        padding: 5px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+      }
+      .remove-question {
+        background-color: #ff4444;
+        color: white;
+        border: none;
+      }
+      #addQuestionBtn {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+      }
+      button[type="submit"] {
+        background-color: #008cba;
+        color: white;
+        border: none;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Delete Forms</h1>
+    <section style="margin-bottom: 24px;">
+      <h2>Delete a Form</h2>
+      <label for="formIdToDelete">Enter Form ID:</label><br />
+      <input type="text" id="formIdToDelete" placeholder="e.g., 123" />
+      <button id="deleteFormBtn" style="margin-left: 8px">Delete Form</button>
+    </section>
+
+    <hr />
+    <section style="margin-top: 24px;">
+      <h2>Delete Reply From Existing Forms</h2>
+      <label for="formIdForReply">Enter Form ID:</label><br />
+      <input type="text" id="formIdForReply" placeholder="e.g., 123" />
+      <button id="loadRepliesBtn" style="margin-left: 8px">Load Replies</button>
+
+      <div id="replyChooser" style="margin-top: 15px; display: none">
+        <label for="replySelect">Choose a Reply to Delete:</label><br />
+        <select id="replySelect" disabled>
+          <option value="">-- Select a reply --</option>
+        </select>
+        <button id="deleteReplyBtn" disabled style="margin-left: 8px; background-color: #ff4444; color: white; border: none;">Delete Reply</button>
+      </div>
+    </section>
+
+    <script type="module" src="deleteForm.js"></script>
+  </body>
+</html>
