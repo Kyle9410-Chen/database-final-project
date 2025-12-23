@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fill Out Form</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .question {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      .question h3 {
+        margin-top: 0;
+        color: #333;
+      }
+      .required {
+        color: red;
+        font-weight: bold;
+      }
+      input,
+      select,
+      textarea {
+        margin: 5px 0;
+        padding: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+      input[type="checkbox"],
+      input[type="radio"] {
+        width: auto;
+        margin-right: 8px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+      }
+      button[type="submit"] {
+        background-color: #008cba;
+        color: white;
+        font-size: 16px;
+      }
+      .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+      }
+      .form-title {
+        font-size: 28px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      .option-group {
+        margin: 10px 0;
+      }
+      .option-item {
+        margin: 5px 0;
+        display: flex;
+        align-items: center;
+      }
+      .option-item label {
+        margin-left: 8px;
+        cursor: pointer;
+      }
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+      .error {
+        color: #ff4444;
+        padding: 15px;
+        background-color: #ffe6e6;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+      .success {
+        color: #4caf50;
+        padding: 15px;
+        background-color: #e8f5e8;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loadingDiv" class="loading">
+      <h2>Loading form...</h2>
+    </div>
+
+    <div id="errorDiv" class="error" style="display: none">
+      <h3>Error loading form</h3>
+      <p id="errorMessage"></p>
+    </div>
+
+    <div id="formContainer" style="display: none">
+      <div class="form-header">
+        <h1 id="formTitle" class="form-title"></h1>
+      </div>
+
+      <form id="filloutForm">
+        <div id="questionsContainer"></div>
+
+        <div
+          style="
+            margin-top: 30px;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+            text-align: center;
+          "
+        >
+          <button type="submit">Submit Response</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="successDiv" class="success" style="display: none">
+      <h3>Form submitted successfully!</h3>
+      <p>Thank you for your response.</p>
+    </div>
+
+    <script type="module" src="filloutForm.js"></script>
+  </body>
+</html>
