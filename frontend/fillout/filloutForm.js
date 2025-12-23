@@ -1,7 +1,7 @@
-// Mock API base URL
+// TODO: Replace with actual API base URL
 const API_BASE_URL = "/api";
 
-// Mock form data for testing
+// TODO: Mock form data for testing - replace with real API calls
 const MOCK_FORM_DATA = {
   form_id: "12345678-1234-5678-9abc-123456789012",
   title: "Sample Survey Form",
@@ -105,11 +105,14 @@ async function loadFormData(id) {
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    // For demo purposes, use mock data
-    // In real implementation, this would be:
+    // TODO: In real implementation, this would be:
     // const response = await fetch(`${API_BASE_URL}/forms/${id}`);
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${response.status}`);
+    // }
     // const formData = await response.json();
 
+    // TODO: For demo purposes, use mock data
     const formData = MOCK_FORM_DATA;
     console.log("✅ Form data loaded:", formData);
     return formData;
@@ -266,8 +269,7 @@ async function submitFormAnswers(formId, answers) {
     // Simulate API call delay
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    // For demo purposes, just log the submission
-    // In real implementation, this would be:
+    // TODO: In real implementation, this would be:
     // const response = await fetch(`${API_BASE_URL}/forms/${formId}/answers`, {
     //   method: 'POST',
     //   headers: {
@@ -275,7 +277,11 @@ async function submitFormAnswers(formId, answers) {
     //   },
     //   body: JSON.stringify(payload)
     // });
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${response.status}`);
+    // }
 
+    // TODO: For demo purposes, just log the submission
     console.log("✅ Form submitted successfully!");
     console.log("🎉 Mock submission completed for demo purposes");
     return true;
@@ -364,4 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Log mock data for reference
 console.log("📋 Mock form data structure:", MOCK_FORM_DATA);
-console.log("🔧 Mock form can be accessed at: ?id=" + MOCK_FORM_DATA.form_id);
+console.log(
+  "🔧 TODO: Replace mock data with real API calls to:",
+  API_BASE_URL + "/forms/{id}"
+);
