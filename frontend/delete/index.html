@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Delete Forms</title>
+    <title>Delete Form</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -47,29 +47,21 @@
     </style>
   </head>
   <body>
-    <h1>Delete Forms</h1>
-    <section style="margin-bottom: 24px;">
-      <h2>Delete a Form</h2>
-      <label for="formIdToDelete">Enter Form ID:</label><br />
-      <input type="text" id="formIdToDelete" placeholder="e.g., 123" />
-      <button id="deleteFormBtn" style="margin-left: 8px">Delete Form</button>
-    </section>
+    <h1>Delete Form</h1>
+    <form>
+      <label for="formTitle">Form Title:</label><br /><input
+        type="text"
+        id="formTitle"
+        name="formTitle"
+        required
+      />
 
-    <hr />
-    <section style="margin-top: 24px;">
-      <h2>Delete Reply From Existing Forms</h2>
-      <label for="formIdForReply">Enter Form ID:</label><br />
-      <input type="text" id="formIdForReply" placeholder="e.g., 123" />
-      <button id="loadRepliesBtn" style="margin-left: 8px">Load Replies</button>
-
-      <div id="replyChooser" style="margin-top: 15px; display: none">
-        <label for="replySelect">Choose a Reply to Delete:</label><br />
-        <select id="replySelect" disabled>
-          <option value="">-- Select a reply --</option>
-        </select>
-        <button id="deleteReplyBtn" disabled style="margin-left: 8px; background-color: #ff4444; color: white; border: none;">Delete Reply</button>
+      <div
+        style="margin-top: 30px; border-top: 2px solid #ddd; padding-top: 20px"
+      >
+        <button type="submit">Delete Form</button>
       </div>
-    </section>
+    </form>
 
     <script type="module" src="deleteForm.js"></script>
   </body>

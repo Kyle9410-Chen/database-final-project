@@ -2,107 +2,135 @@ import { config } from "../config.js";
 
 class UpdateForm {
   constructor() {
-    this.formIdForReplyInput = document.getElementById("formIdForReply");
-    this.loadRepliesBtn = document.getElementById("loadRepliesBtn");
-    this.replyChooser = document.getElementById("replyChooser");
-    this.replySelect = document.getElementById("replySelect");
-    this.proceedReplyUpdateBtn = document.getElementById("proceedReplyUpdate");
+    this.forms = document.querySelectorAll("form");
+    this.currentFormId = null;
 
     this.init();
   }
 
   init() {
-    if (this.loadRepliesBtn && this.formIdForReplyInput) {
-      this.loadRepliesBtn.addEventListener("click", async () => {
-        const formId = (this.formIdForReplyInput.value || "").trim();
-        if (!formId) {
-          alert("Please enter a Form ID.");
-          return;
-        }
-        await this.loadReplies(formId);
-      });
-    }
+    if (this.forms.length >= 2) {
+      const firstForm = this.forms[0];
+      const secondForm = this.forms[1];
 
-    if (this.replySelect && this.proceedReplyUpdateBtn) {
-      this.replySelect.addEventListener("change", () => {
-        const selected = this.replySelect.value;
-        this.proceedReplyUpdateBtn.disabled = !selected;
+      firstForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleFirstFormSubmit(firstForm);
       });
 
-      this.proceedReplyUpdateBtn.addEventListener("click", () => {
-        const formId = (this.formIdForReplyInput.value || "").trim();
-        const selectedReplyId = this.replySelect?.value;
-        if (!selectedReplyId || !formId) return;
-
-        try {
-          localStorage.setItem(
-            "replyUpdateSelection",
-            JSON.stringify({ form_id: formId, reply_id: selectedReplyId })
-          );
-        } catch {}
-
-        alert(`Selected reply ${selectedReplyId} for form ${formId}.`);
+      secondForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.handleSecondFormSubmit(secondForm);
       });
     }
   }
 
-  async loadReplies(formId) {
+  async handleFirstFormSubmit(form) {
+    const formTitle = (form.querySelector("#formTitle").value || "").trim();
+
+    if (!formTitle) {
+      alert("Please enter a form title.");
+      return;
+    }
+
     try {
-      if (this.loadRepliesBtn) {
-        this.loadRepliesBtn.disabled = true;
-        this.loadRepliesBtn.textContent = "Loading...";
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Loading...";
       }
 
-      const formResp = await fetch(`${config.apiBaseUrl}/api/forms/${formId}`);
-      if (!formResp.ok) {
-        const errorText = await formResp.text();
-        throw new Error(`Form not found: ${formResp.status} ${errorText}`);
+      // Search for forms with this title
+      const formsResp = await fetch(`${config.apiBaseUrl}/api/forms`);
+      if (!formsResp.ok) {
+        throw new Error("Failed to fetch forms");
       }
 
-      const repliesResp = await fetch(`${config.apiBaseUrl}/api/forms/${formId}/replies`);
-      if (!repliesResp.ok) {
-        const errorText = await repliesResp.text();
-        throw new Error(`Failed to load replies: ${repliesResp.status} ${errorText}`);
+      const forms = await formsResp.json();
+      const matchedForm = forms.find(
+        (f) => (f.title || "").trim().toLowerCase() === formTitle.toLowerCase()
+      );
+
+      if (!matchedForm) {
+        alert(`No form found with title "${formTitle}".`);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit";
+        }
+        return;
       }
 
-      const replies = await repliesResp.json();
-      this.populateReplies(replies || []);
+      this.currentFormId = matchedForm.form_id || matchedForm.id;
+      alert(`Form found! ID: ${this.currentFormId}`);
 
-      if (this.replyChooser) this.replyChooser.style.display = "block";
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+      }
     } catch (error) {
-      console.error("Error loading replies:", error);
-      alert(`Error loading replies: ${error.message}`);
-      if (this.replyChooser) this.replyChooser.style.display = "none";
-    } finally {
-      if (this.loadRepliesBtn) {
-        this.loadRepliesBtn.disabled = false;
-        this.loadRepliesBtn.textContent = "Load Replies";
+      console.error("Error loading form:", error);
+      alert(`Error: ${error.message}`);
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
       }
     }
   }
 
-  populateReplies(replies) {
-    if (!this.replySelect) return;
-    this.replySelect.innerHTML = "";
-    const placeholder = document.createElement("option");
-    placeholder.value = "";
-    placeholder.textContent = "-- Select a reply --";
-    this.replySelect.appendChild(placeholder);
+  async handleSecondFormSubmit(form) {
+    if (!this.currentFormId) {
+      alert("Please find the form first by entering its title.");
+      return;
+    }
 
-    replies.forEach((r, idx) => {
-      const opt = document.createElement("option");
-      const id = r.reply_id || r.id || r.submission_id || `${idx + 1}`;
-      const labelParts = [
-        `Reply ${id}`,
-        r.created_at || r.createdAt ? `(${r.created_at || r.createdAt})` : "",
-      ].filter(Boolean);
-      opt.value = id;
-      opt.textContent = labelParts.join(" ");
-      this.replySelect.appendChild(opt);
-    });
+    const newTitle = (form.querySelector("#formTitle").value || "").trim();
 
-    this.replySelect.disabled = replies.length === 0;
-    if (this.proceedReplyUpdateBtn) this.proceedReplyUpdateBtn.disabled = true;
+    if (!newTitle) {
+      alert("Please enter a new title.");
+      return;
+    }
+
+    try {
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Updating...";
+      }
+
+      const response = await fetch(`${config.apiBaseUrl}/api/forms/${this.currentFormId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: newTitle,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update form: ${response.status} ${errorText}`);
+      }
+
+      alert(`Form title updated successfully to "${newTitle}"!`);
+      form.querySelector("#formTitle").value = "";
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Update Form";
+      }
+    } catch (error) {
+      console.error("Error updating form:", error);
+      alert(`Error: ${error.message}`);
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Update Form";
+      }
+    }
   }
 }
 
