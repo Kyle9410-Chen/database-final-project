@@ -36,7 +36,7 @@ class FormBuilder {
       // Trigger the change event to set the initial state
       const currentType = typeSelect.value;
       const needsOptions =
-        currentType === "select" || currentType === "multiple_select";
+        currentType === "select" || currentType === "multiselect";
 
       optionsDiv.style.display = needsOptions ? "block" : "none";
 
@@ -71,7 +71,7 @@ class FormBuilder {
       <select name="questionType">
         <option value="short_answer">Short Answer</option>
         <option value="select">Select</option>
-        <option value="multiple_select">Multiple Select</option>
+        <option value="multiselect">Multiple Select</option>
       </select>
       
       <div class="options" style="display: none; margin-top: 10px;">
@@ -106,7 +106,7 @@ class FormBuilder {
     typeSelect.addEventListener("change", () => {
       console.log("Question type changed to:", typeSelect.value);
       const needsOptions =
-        typeSelect.value === "select" || typeSelect.value === "multiple_select";
+        typeSelect.value === "select" || typeSelect.value === "multiselect";
       optionsDiv.style.display = needsOptions ? "block" : "none";
       console.log("Options div display set to:", optionsDiv.style.display);
 
@@ -195,7 +195,7 @@ class FormBuilder {
       if (typeSelect && optionsDiv) {
         const currentType = typeSelect.value;
         const needsOptions =
-          currentType === "select" || currentType === "multiple_select";
+          currentType === "select" || currentType === "multiselect";
 
         // Ensure option inputs have correct required state
         const optionInputs = optionsDiv.querySelectorAll('[name="option"]');
@@ -239,8 +239,8 @@ class FormBuilder {
         question_text: questionText,
       };
 
-      // Add options only for select/multiple_select types
-      if (type === "select" || type === "multiple_select") {
+      // Add options only for select/multiselect types
+      if (type === "select" || type === "multiselect") {
         const optionInputs = questionDiv.querySelectorAll('[name="option"]');
         const options = Array.from(optionInputs)
           .map((input) => input.value.trim())
