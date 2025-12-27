@@ -4,7 +4,10 @@ import (
 	"context"
 	"database-final-project/internal/config"
 	"database-final-project/internal/database"
+	"database-final-project/internal/form"
 	loguril "database-final-project/internal/logger"
+	"database-final-project/internal/question"
+	"database-final-project/internal/question/options"
 	"errors"
 	"log"
 	"net/http"
@@ -13,6 +16,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +43,25 @@ func main() {
 		logger.Fatal("Database migration failed", zap.Error(err))
 	}
 
+	dbPool, err := pgxpool.New(context.Background(), cfg.DatabaseURL)
+	if err != nil {
+		logger.Fatal("Failed to connect to database", zap.Error(err))
+	}
+
+	optionsQuerier := options.New(dbPool)
+	optionsStore := options.NewService(logger, optionsQuerier)
+
+	questionQuerier := question.New(dbPool)
+	questionService := question.NewService(logger, questionQuerier, optionsStore)
+
+	formQuerier := form.New(dbPool)
+	formService := form.NewService(logger, formQuerier, questionService)
+	formHandler := form.NewHandler(logger, formService)
+
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /api/forms", formHandler.GetAll)
+	mux.HandleFunc("GET /api/forms/{id}", formHandler.GetByID)
+	mux.HandleFunc("POST /api/forms", formHandler.Create)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})
 

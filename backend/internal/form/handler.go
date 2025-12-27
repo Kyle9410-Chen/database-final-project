@@ -10,19 +10,21 @@ import (
 )
 
 type CreateRequest struct {
-	Title string `json:"title" validate:"required,min=1,max=255"`
+	Title     string            `json:"title" validate:"required,min=1,max=255"`
+	Questions []QuestionRequest `json:"questions,omitempty"`
 }
 
-type Response struct {
-	ID          uuid.UUID `json:"form_id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
+type QuestionRequest struct {
+	QuestionType QuestionType `json:"type" validate:"required,oneof=short_answer select multiselect"`
+	IsRequired   bool         `json:"is_required"`
+	QuestionText string       `json:"question_text" validate:"required,min=1,max=1000"`
+	Options      []string     `json:"options,omitempty"`
 }
 
 type Store interface {
-	GetAll(ctx context.Context) ([]Form, error)
-	GetByID(ctx context.Context, id uuid.UUID) (Form, error)
-	Create(ctx context.Context, title string) (Form, error)
+	GetAll(ctx context.Context) ([]QuestionsForm, error)
+	GetByID(ctx context.Context, id uuid.UUID) (QuestionsForm, error)
+	Create(ctx context.Context, title string, questionRequest []QuestionRequest) (QuestionsForm, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 }
 
@@ -38,6 +40,41 @@ func NewHandler(logger *zap.Logger, store Store) *Handler {
 	}
 }
 
+func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
+	forms, err := h.store.GetAll(r.Context())
+	if err != nil {
+		h.logger.Error("Failed to get forms", zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusInternalServerError, internal.NewInternalServerError("Failed to get forms"))
+		return
+	}
+
+	if forms == nil {
+		forms = []QuestionsForm{}
+	}
+
+	internal.WriteResponseToBody(w, h.logger, http.StatusOK, forms)
+}
+
+func (h *Handler) GetByID(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		h.logger.Error("Invalid form ID", zap.String("id", idStr), zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusBadRequest, internal.NewBadRequestError("Invalid form ID"))
+		return
+	}
+
+	form, err := h.store.GetByID(r.Context(), id)
+	if err != nil {
+		h.logger.Error("Failed to get form by ID", zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusInternalServerError, internal.NewInternalServerError("Failed to get form"))
+		return
+	}
+
+	internal.WriteResponseToBody(w, h.logger, http.StatusOK, form)
+}
+
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var req CreateRequest
 	err := internal.ParseRequestFromBody(r, h.logger, &req)
@@ -46,15 +83,12 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	form, err := h.store.Create(r.Context(), req.Title)
+	form, err := h.store.Create(r.Context(), req.Title, req.Questions)
 	if err != nil {
 		h.logger.Error("Failed to create form", zap.Error(err))
 		internal.WriteResponseToBody(w, h.logger, http.StatusInternalServerError, internal.NewInternalServerError("Failed to create form"))
 		return
 	}
 
-	internal.WriteResponseToBody(w, h.logger, http.StatusCreated, Response{
-		ID:    form.ID,
-		Title: form.Title,
-	})
+	internal.WriteResponseToBody(w, h.logger, http.StatusCreated, form)
 }
