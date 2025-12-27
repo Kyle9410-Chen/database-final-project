@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>View Replies</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .question {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      input,
+      select,
+      textarea {
+        margin: 5px 0;
+        padding: 5px;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+      }
+      .remove-question {
+        background-color: #ff4444;
+        color: white;
+        border: none;
+      }
+      #addQuestionBtn {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+      }
+      button[type="submit"] {
+        background-color: #008cba;
+        color: white;
+        border: none;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>View Replies</h1>
+    <section>
+      <h2>View Replies From Existing Forms</h2>
+      <div style="margin-bottom: 20px;">
+        <button id="loadAllRepliesBtn" style="background-color: #4caf50; color: white; border: none; padding: 10px 15px; cursor: pointer; font-size: 16px;">
+          View Replies from All Forms
+        </button>
+      </div>
+      
+      <h3>Or view replies from a specific form:</h3>
+      <label for="formIdForReply">Enter Form ID:</label><br />
+      <input type="text" id="formIdForReply" placeholder="e.g., 123" />
+      <button id="loadRepliesBtn" style="margin-left: 8px">Load Replies</button>
+
+      <div id="replyChooser" style="margin-top: 15px; display: none">
+        <label for="replySelect">Choose a Reply to View:</label><br />
+        <select id="replySelect" disabled>
+          <option value="">-- Select a reply --</option>
+        </select>
+        <button id="proceedReplyUpdate" disabled style="margin-left: 8px">
+          Continue
+        </button>
+      </div>
+    </section>
+
+    <script type="module" src="viewForm.js"></script>
+  </body>
+</html>

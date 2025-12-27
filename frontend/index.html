@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Database System</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        margin: 20px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+      input,
+      select,
+      textarea {
+        margin: 5px 0;
+        padding: 5px;
+      }
+      button,
+      .btn-link {
+        padding: 10px 15px;
+        margin: 10px 5px 0 0;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+        border-radius: 3px;
+      }
+      .btn-primary {
+        background-color: #4caf50;
+        color: white;
+      }
+      .btn-secondary {
+        background-color: #008cba;
+        color: white;
+      }
+      .btn-danger {
+        background-color: #ff4444;
+        color: white;
+      }
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+      }
+      .action-buttons {
+        margin-top: 30px;
+        border-top: 2px solid #ddd;
+        padding-top: 20px;
+      }
+      .forms-section {
+        margin-top: 30px;
+      }
+      .forms-list {
+        margin-top: 20px;
+      }
+      .form-item {
+        margin: 10px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+      .form-item:hover {
+        background-color: #f5f5f5;
+        border-color: #008cba;
+      }
+      .form-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+      }
+      .form-id {
+        font-size: 12px;
+        color: #666;
+        font-family: monospace;
+      }
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+      }
+      .error {
+        color: #ff4444;
+        padding: 15px;
+        background-color: #ffe6e6;
+        border-radius: 4px;
+        margin: 20px 0;
+      }
+      .no-forms {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Form Database System</h1>
+
+    <div class="card">
+      <h2>Welcome</h2>
+      <p>
+        Create and manage forms with ease. Build custom forms with various
+        question types including short answer, single select, and multiple
+        select options.
+      </p>
+    </div>
+
+    <div class="action-buttons">
+      <a href="/create" class="btn-link btn-primary">Create New Form</a>
+      <a href="/update" class="btn-link btn-danger">Update Forms</a>
+      <a href="/delete" class="btn-link btn-danger">Delete Forms</a>
+      <a href="/view" class="btn-link btn-secondary">View Replies</a>
+      <button id="refreshFormsBtn" class="btn-link btn-secondary">
+        Refresh Forms
+      </button>
+    </div>
+
+    <div class="forms-section">
+      <div class="card">
+        <h2>Available Forms</h2>
+        <p>Click on any form to fill it out:</p>
+
+        <div id="loadingDiv" class="loading">
+          <h3>Loading forms...</h3>
+        </div>
+
+        <div id="errorDiv" class="error" style="display: none">
+          <h3>Error loading forms</h3>
+          <p id="errorMessage"></p>
+          <button
+            id="retryBtn"
+            class="btn-link btn-secondary"
+            style="margin-top: 10px"
+          >
+            Try Again
+          </button>
+        </div>
+
+        <div id="formsContainer" class="forms-list" style="display: none">
+          <!-- Forms will be populated here -->
+        </div>
+
+        <div id="noFormsDiv" class="no-forms" style="display: none">
+          <p>
+            No forms available. <a href="/create">Create your first form</a>!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="formsList.js"></script>
+  </body>
+</html>
