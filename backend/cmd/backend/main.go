@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"database-final-project/internal/answer"
 	"database-final-project/internal/config"
 	"database-final-project/internal/database"
 	"database-final-project/internal/form"
 	loguril "database-final-project/internal/logger"
+	"database-final-project/internal/options"
 	"database-final-project/internal/question"
-	"database-final-project/internal/question/options"
+	"database-final-project/internal/submission"
 	"errors"
 	"log"
 	"net/http"
@@ -51,17 +53,25 @@ func main() {
 	optionsQuerier := options.New(dbPool)
 	optionsStore := options.NewService(logger, optionsQuerier)
 
+	answerQuerier := answer.New(dbPool)
+	answerService := answer.NewService(logger, answerQuerier, optionsStore)
+
+	submissionQuerier := submission.New(dbPool)
+	submissionService := submission.NewService(logger, submissionQuerier, answerService)
+
 	questionQuerier := question.New(dbPool)
 	questionService := question.NewService(logger, questionQuerier, optionsStore)
 
 	formQuerier := form.New(dbPool)
 	formService := form.NewService(logger, formQuerier, questionService)
-	formHandler := form.NewHandler(logger, formService)
+	formHandler := form.NewHandler(logger, formService, submissionService)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/forms", formHandler.GetAll)
 	mux.HandleFunc("GET /api/forms/{id}", formHandler.GetByID)
 	mux.HandleFunc("POST /api/forms", formHandler.Create)
+	mux.HandleFunc("GET /api/forms/{id}/answers", formHandler.GetAllAnswer)
+	mux.HandleFunc("POST /api/forms/{id}/answers", formHandler.CreateAnswer)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {})
 

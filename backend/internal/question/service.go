@@ -2,7 +2,7 @@ package question
 
 import (
 	"context"
-	"database-final-project/internal/question/options"
+	"database-final-project/internal/options"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -14,8 +14,8 @@ type Querier interface {
 }
 
 type optionStore interface {
-	Create(ctx context.Context, questionID uuid.UUID, text string) (options.Option, error)
-	GetByQuestionID(ctx context.Context, questionID uuid.UUID) ([]options.Option, error)
+	Create(ctx context.Context, questionID uuid.UUID, text string) (options.Response, error)
+	GetByQuestionID(ctx context.Context, questionID uuid.UUID) ([]options.Response, error)
 }
 
 type Service struct {
@@ -38,14 +38,14 @@ func (s *Service) GetByFormID(ctx context.Context, formID uuid.UUID) ([]OptionsQ
 		return nil, err
 	}
 
-	os, err := s.optionStore.GetByQuestionID(ctx, formID)
-	if err != nil {
-		return nil, err
-	}
-
 	var optionsQuestions []OptionsQuestion
 	for _, q := range question {
+		os, err := s.optionStore.GetByQuestionID(ctx, q.ID)
+		if err != nil {
+			return nil, err
+		}
 		optionsQuestions = append(optionsQuestions, OptionsQuestion{
+			QuestionID:   q.ID,
 			QuestionType: q.Type,
 			QuestionText: q.Text,
 			IsRequired:   q.IsRequired,
@@ -67,7 +67,7 @@ func (s *Service) Create(ctx context.Context, formID uuid.UUID, questionText str
 		return OptionsQuestion{}, err
 	}
 
-	os := make([]options.Option, len(optionsReq))
+	os := make([]options.Response, len(optionsReq))
 	for i, optionText := range optionsReq {
 		option, err := s.optionStore.Create(ctx, question.ID, optionText)
 		if err != nil {
@@ -77,6 +77,7 @@ func (s *Service) Create(ctx context.Context, formID uuid.UUID, questionText str
 	}
 
 	return OptionsQuestion{
+		QuestionID:   question.ID,
 		QuestionType: question.Type,
 		QuestionText: question.Text,
 		IsRequired:   question.IsRequired,
