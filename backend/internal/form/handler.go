@@ -16,6 +16,10 @@ type CreateRequest struct {
 	Questions []QuestionRequest `json:"questions,omitempty"`
 }
 
+type UpdateRequest struct {
+	Title string `json:"title" validate:"required,min=1,max=255"`
+}
+
 type QuestionRequest struct {
 	QuestionType QuestionType `json:"type" validate:"required,oneof=short_answer select multiselect"`
 	IsRequired   bool         `json:"is_required"`
@@ -38,6 +42,7 @@ type Store interface {
 	GetByID(ctx context.Context, id uuid.UUID) (QuestionsForm, error)
 	Create(ctx context.Context, title string, questionRequest []QuestionRequest) (QuestionsForm, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, id uuid.UUID, title string) (QuestionsForm, error)
 }
 
 type submissionStore interface {
@@ -110,6 +115,53 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	internal.WriteResponseToBody(w, h.logger, http.StatusCreated, form)
+}
+
+func (h *Handler) Delete(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		h.logger.Error("Invalid form ID", zap.String("id", idStr), zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusBadRequest, internal.NewBadRequestError("Invalid form ID"))
+		return
+	}
+
+	err = h.store.Delete(r.Context(), id)
+	if err != nil {
+		h.logger.Error("Failed to delete form", zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusInternalServerError, internal.NewInternalServerError("Failed to delete form"))
+		return
+	}
+
+	internal.WriteResponseToBody(w, h.logger, http.StatusNoContent, nil)
+}
+
+func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		h.logger.Error("Invalid form ID", zap.String("id", idStr), zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusBadRequest, internal.NewBadRequestError("Invalid form ID"))
+		return
+	}
+
+	var req UpdateRequest
+	err = internal.ParseRequestFromBody(r, h.logger, &req)
+	if err != nil {
+		internal.WriteResponseToBody(w, h.logger, http.StatusBadRequest, internal.NewBadRequestError(err.Error()))
+		return
+	}
+
+	updatedForm, err := h.store.Update(r.Context(), id, req.Title)
+	if err != nil {
+		h.logger.Error("Failed to update form", zap.Error(err))
+		internal.WriteResponseToBody(w, h.logger, http.StatusInternalServerError, internal.NewInternalServerError("Failed to update form"))
+		return
+	}
+
+	internal.WriteResponseToBody(w, h.logger, http.StatusOK, updatedForm)
 }
 
 func (h *Handler) GetAllAnswer(w http.ResponseWriter, r *http.Request) {

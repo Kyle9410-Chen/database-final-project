@@ -13,6 +13,7 @@ type Querier interface {
 	GetByID(ctx context.Context, id uuid.UUID) (Form, error)
 	Create(ctx context.Context, title string) (Form, error)
 	Delete(ctx context.Context, id uuid.UUID) error
+	Update(ctx context.Context, param UpdateParams) (Form, error)
 }
 
 type questionStore interface {
@@ -87,6 +88,27 @@ func (s *Service) Create(ctx context.Context, title string, questionRequest []Qu
 		if err != nil {
 			return QuestionsForm{}, err
 		}
+	}
+
+	return QuestionsForm{
+		FormID:    form.ID,
+		Title:     form.Title,
+		Questions: questions,
+	}, nil
+}
+
+func (s *Service) Update(ctx context.Context, id uuid.UUID, title string) (QuestionsForm, error) {
+	form, err := s.querier.Update(ctx, UpdateParams{
+		ID:    id,
+		Title: title,
+	})
+	if err != nil {
+		return QuestionsForm{}, err
+	}
+
+	questions, err := s.questionStore.GetByFormID(ctx, form.ID)
+	if err != nil {
+		return QuestionsForm{}, err
 	}
 
 	return QuestionsForm{

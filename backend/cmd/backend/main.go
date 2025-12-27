@@ -70,6 +70,8 @@ func main() {
 	mux.HandleFunc("GET /api/forms", formHandler.GetAll)
 	mux.HandleFunc("GET /api/forms/{id}", formHandler.GetByID)
 	mux.HandleFunc("POST /api/forms", formHandler.Create)
+	mux.HandleFunc("PUT /api/forms/{id}", formHandler.Update)
+	mux.HandleFunc("DELETE /api/forms/{id}", formHandler.Delete)
 	mux.HandleFunc("GET /api/forms/{id}/answers", formHandler.GetAllAnswer)
 	mux.HandleFunc("POST /api/forms/{id}/answers", formHandler.CreateAnswer)
 
