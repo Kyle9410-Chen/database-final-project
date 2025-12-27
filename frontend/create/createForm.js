@@ -14,15 +14,43 @@ class FormBuilder {
     this.addQuestionBtn.addEventListener("click", () => this.addQuestion());
 
     // Set up existing question event listeners
-    this.setupQuestionEventListeners(
-      this.questionContainer.querySelector(".question")
-    );
+    const existingQuestion = this.questionContainer.querySelector(".question");
+    if (existingQuestion) {
+      this.setupQuestionEventListeners(existingQuestion);
+      // Initialize the first question's state
+      this.initializeQuestionState(existingQuestion);
+    }
 
     // Handle form submission
     const form = document.querySelector("form");
     form.addEventListener("submit", (e) => this.handleSubmit(e));
 
     this.questionCount = 1; // Account for the existing question
+  }
+
+  initializeQuestionState(questionDiv) {
+    const typeSelect = questionDiv.querySelector('[name="questionType"]');
+    const optionsDiv = questionDiv.querySelector(".options");
+
+    if (typeSelect && optionsDiv) {
+      // Trigger the change event to set the initial state
+      const currentType = typeSelect.value;
+      const needsOptions =
+        currentType === "select" || currentType === "multiple_select";
+
+      optionsDiv.style.display = needsOptions ? "block" : "none";
+
+      // Set required attribute on option inputs
+      const optionInputs = optionsDiv.querySelectorAll('[name="option"]');
+      optionInputs.forEach((input) => {
+        if (needsOptions) {
+          input.required = true;
+        } else {
+          input.required = false;
+          input.value = "";
+        }
+      });
+    }
   }
 
   addQuestion() {
@@ -65,6 +93,8 @@ class FormBuilder {
 
     // Set up event listeners for the new question
     this.setupQuestionEventListeners(questionDiv);
+    // Initialize the new question's state
+    this.initializeQuestionState(questionDiv);
   }
 
   setupQuestionEventListeners(questionDiv) {
@@ -83,9 +113,11 @@ class FormBuilder {
       // Set required attribute on option inputs
       const optionInputs = optionsDiv.querySelectorAll('[name="option"]');
       optionInputs.forEach((input) => {
-        input.required = needsOptions;
-        if (!needsOptions) {
-          input.value = "";
+        if (needsOptions) {
+          input.required = true;
+        } else {
+          input.required = false;
+          input.value = ""; // Clear the value when hiding
         }
       });
     });
@@ -153,6 +185,31 @@ class FormBuilder {
     this.questionCount = questions.length;
   }
 
+  validateFormState() {
+    // Ensure all questions have proper state before form submission
+    const questions = this.questionContainer.querySelectorAll(".question");
+    questions.forEach((questionDiv) => {
+      const typeSelect = questionDiv.querySelector('[name="questionType"]');
+      const optionsDiv = questionDiv.querySelector(".options");
+
+      if (typeSelect && optionsDiv) {
+        const currentType = typeSelect.value;
+        const needsOptions =
+          currentType === "select" || currentType === "multiple_select";
+
+        // Ensure option inputs have correct required state
+        const optionInputs = optionsDiv.querySelectorAll('[name="option"]');
+        optionInputs.forEach((input) => {
+          if (needsOptions && optionsDiv.style.display !== "none") {
+            input.required = true;
+          } else {
+            input.required = false;
+          }
+        });
+      }
+    });
+  }
+
   collectFormData() {
     const titleInput = document.getElementById("formTitle");
     const title = titleInput.value.trim();
@@ -182,7 +239,7 @@ class FormBuilder {
         question_text: questionText,
       };
 
-      // Add options for select/multiple_select types
+      // Add options only for select/multiple_select types
       if (type === "select" || type === "multiple_select") {
         const optionInputs = questionDiv.querySelectorAll('[name="option"]');
         const options = Array.from(optionInputs)
@@ -196,13 +253,8 @@ class FormBuilder {
         }
 
         question.options = options;
-
-        if (question.options.length === 0) {
-          throw new Error(
-            `At least one option is required for ${type} questions`
-          );
-        }
       }
+      // For short_answer questions, don't add options property at all
 
       return question;
     });
@@ -221,6 +273,9 @@ class FormBuilder {
     event.preventDefault();
 
     try {
+      // Validate all questions before submission
+      this.validateFormState();
+
       const formData = this.collectFormData();
 
       // Show loading state

@@ -92,37 +92,30 @@ class UpdateForm {
       return;
     }
 
+    // Note: Update functionality is not supported by the current API
+    // The API specification does not include PUT /api/forms/{id} endpoint
+
     try {
       const submitBtn = form.querySelector('button[type="submit"]');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.textContent = "Updating...";
+        submitBtn.textContent = "Checking...";
       }
 
-      const response = await fetch(`${config.apiBaseUrl}/api/forms/${this.currentFormId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: newTitle,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to update form: ${response.status} ${errorText}`);
-      }
-
-      alert(`Form title updated successfully to "${newTitle}"!`);
-      form.querySelector("#formTitle").value = "";
+      // Show message about unsupported functionality
+      alert(
+        `Update functionality is not currently supported.\n\n` +
+          `The API does not include update endpoints for forms.\n` +
+          `Current form ID: ${this.currentFormId}\n` +
+          `Requested new title: "${newTitle}"`
+      );
 
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Update Form";
       }
     } catch (error) {
-      console.error("Error updating form:", error);
+      console.error("Error:", error);
       alert(`Error: ${error.message}`);
 
       const submitBtn = form.querySelector('button[type="submit"]');

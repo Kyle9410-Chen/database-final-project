@@ -63,21 +63,15 @@ class DeleteForm {
 
       const formId = formToDelete.form_id || formToDelete.id;
 
-      // Delete the form
-      const deleteResp = await fetch(`${config.apiBaseUrl}/api/forms/${formId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      // Note: Delete functionality is not supported by the current API
+      // The API specification does not include DELETE /api/forms/{id} endpoint
 
-      if (!deleteResp.ok) {
-        const errorText = await deleteResp.text();
-        throw new Error(`Failed to delete form: ${deleteResp.status} ${errorText}`);
-      }
-
-      alert(`Form "${title}" has been successfully deleted.`);
-      this.formTitleInput.value = "";
+      alert(
+        `Delete functionality is not currently supported.\n\n` +
+          `The API does not include delete endpoints for forms.\n` +
+          `Found form: "${formToDelete.title}" (ID: ${formId})\n\n` +
+          `To delete this form, you would need to contact the system administrator.`
+      );
 
       if (submitBtn) {
         submitBtn.disabled = false;
