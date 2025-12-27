@@ -42,19 +42,24 @@ class DeleteForm {
       }
 
       // Delete the form using the API with the provided ID
-      const deleteResp = await fetch(`${config.apiBaseUrl}/api/forms/${formId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const deleteResp = await fetch(
+        `${config.apiBaseUrl}/api/forms/${formId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!deleteResp.ok) {
         if (deleteResp.status === 404) {
           throw new Error(`Form with ID "${formId}" not found.`);
         }
         const errorText = await deleteResp.text();
-        throw new Error(`Failed to delete form: ${deleteResp.status} ${errorText}`);
+        throw new Error(
+          `Failed to delete form: ${deleteResp.status} ${errorText}`
+        );
       }
 
       alert(`Form with ID "${formId}" has been successfully deleted.`);

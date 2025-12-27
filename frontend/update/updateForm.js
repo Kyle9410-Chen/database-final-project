@@ -52,7 +52,9 @@ class UpdateForm {
           throw new Error(`Form with ID "${formId}" not found.`);
         }
         const errorText = await response.text();
-        throw new Error(`Failed to update form: ${response.status} ${errorText}`);
+        throw new Error(
+          `Failed to update form: ${response.status} ${errorText}`
+        );
       }
 
       const updatedForm = await response.json();
