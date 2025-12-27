@@ -85,6 +85,16 @@ namespace API {
   @get
   op getFormById(id: string): Form;
 
+  @doc("Delete a form by its ID")
+  @route("/forms/{id}")
+  @delete
+  op deleteForm(id: string): void;
+
+  @doc("Update a form title by its ID")
+  @route("/forms/{id}")
+  @put
+  op updateFormTitle(id: string, @body body: { title: string }): Form;
+
   @doc("Create a new form")
   @route("/forms")
   @post
