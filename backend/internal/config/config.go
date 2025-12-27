@@ -118,7 +118,7 @@ func FromFile(path string, baseConfig *Config, logger *LogBuffer) (*Config, erro
 func FromEnv(baseConfig *Config) (*Config, error) {
 
 	if err := godotenv.Load(".env"); err != nil {
-		return nil, err
+		return baseConfig, err
 	}
 
 	envConfig := &Config{

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database-final-project/internal/answer"
 	"database-final-project/internal/config"
+	"database-final-project/internal/cors"
 	"database-final-project/internal/database"
 	"database-final-project/internal/form"
 	loguril "database-final-project/internal/logger"
@@ -80,7 +81,9 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
-	srv := &http.Server{Addr: ":8080", Handler: mux}
+	entrypoint := cors.CORSMiddleware(mux.ServeHTTP, logger, []string{"*"})
+
+	srv := &http.Server{Addr: ":8080", Handler: http.HandlerFunc(entrypoint)}
 
 	go func() {
 		logger.Info("Server is listening", zap.String("addr", srv.Addr))

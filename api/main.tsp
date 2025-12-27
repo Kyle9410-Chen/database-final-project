@@ -8,7 +8,7 @@ scalar uuid extends string;
 @service
 @route("/api")
 namespace API {
-  @doc("An option for select and multiple_select questions")
+  @doc("An option for select and multiselect questions")
   model Option {
     option_id: uuid;
     option_text: string;
@@ -17,21 +17,21 @@ namespace API {
   @doc("A question in a form")
   model QuestionResponse {
     question_id: uuid;
-    type: "short_answer" | "select" | "multiple_select";
+    type: "short_answer" | "select" | "multiselect";
     is_required: boolean;
     question_text: string;
 
-    @doc("Options for select and multiple_select question types")
+    @doc("Options for select and multiselect question types")
     options?: Option[];
   }
 
   @doc("Request model for creating a new form question")
   model QuestionRequest {
-    type: "short_answer" | "select" | "multiple_select";
+    type: "short_answer" | "select" | "multiselect";
     is_required: boolean;
     question_text: string;
 
-    @doc("Options for select and multiple_select question types")
+    @doc("Options for select and multiselect question types")
     options?: string[];
   }
 
@@ -84,6 +84,16 @@ namespace API {
   @route("/forms/{id}")
   @get
   op getFormById(id: string): Form;
+
+  @doc("Delete a form by its ID")
+  @route("/forms/{id}")
+  @delete
+  op deleteForm(id: string): void;
+
+  @doc("Update a form title by its ID")
+  @route("/forms/{id}")
+  @put
+  op updateFormTitle(id: string, @body body: { title: string }): Form;
 
   @doc("Create a new form")
   @route("/forms")

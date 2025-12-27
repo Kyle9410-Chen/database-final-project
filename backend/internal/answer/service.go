@@ -51,7 +51,7 @@ func (s *Service) GetBySubmissionID(ctx context.Context, submissionID uuid.UUID)
 			QuestionText:  answer.Text,
 			Options:       os,
 			AnswerOptions: answer.AnswerOptions,
-			AnswerText:    answer.Text,
+			AnswerText:    answer.AnswerText.String,
 		}
 	}
 

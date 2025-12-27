@@ -1,80 +1,8 @@
-// TODO: Replace with actual API base URL
-const API_BASE_URL = "/api";
+import { config } from "../config.js";
 
-// TODO: Mock form data for testing - replace with real API calls
-const MOCK_FORM_DATA = {
-  form_id: "12345678-1234-5678-9abc-123456789012",
-  title: "Sample Survey Form",
-  questions: [
-    {
-      question_id: "q1-1234-5678-9abc-123456789012",
-      type: "short_answer",
-      is_required: true,
-      question_text: "What is your name?",
-      options: [],
-    },
-    {
-      question_id: "q2-1234-5678-9abc-123456789012",
-      type: "select",
-      is_required: true,
-      question_text: "What is your favorite color?",
-      options: [
-        {
-          option_id: "o1-1234-5678-9abc-123456789012",
-          option_text: "Red",
-        },
-        {
-          option_id: "o2-1234-5678-9abc-123456789012",
-          option_text: "Blue",
-        },
-        {
-          option_id: "o3-1234-5678-9abc-123456789012",
-          option_text: "Green",
-        },
-        {
-          option_id: "o4-1234-5678-9abc-123456789012",
-          option_text: "Yellow",
-        },
-      ],
-    },
-    {
-      question_id: "q3-1234-5678-9abc-123456789012",
-      type: "multiple_select",
-      is_required: false,
-      question_text:
-        "Which programming languages do you know? (Select all that apply)",
-      options: [
-        {
-          option_id: "o5-1234-5678-9abc-123456789012",
-          option_text: "JavaScript",
-        },
-        {
-          option_id: "o6-1234-5678-9abc-123456789012",
-          option_text: "Python",
-        },
-        {
-          option_id: "o7-1234-5678-9abc-123456789012",
-          option_text: "Go",
-        },
-        {
-          option_id: "o8-1234-5678-9abc-123456789012",
-          option_text: "Java",
-        },
-        {
-          option_id: "o9-1234-5678-9abc-123456789012",
-          option_text: "C++",
-        },
-      ],
-    },
-    {
-      question_id: "q4-1234-5678-9abc-123456789012",
-      type: "short_answer",
-      is_required: false,
-      question_text: "Any additional comments?",
-      options: [],
-    },
-  ],
-};
+const API_BASE_URL = config.apiBaseUrl;
+
+// Form data will be fetched from the API
 
 // Global variables
 let currentFormData = null;
@@ -90,30 +18,47 @@ const formTitle = document.getElementById("formTitle");
 const questionsContainer = document.getElementById("questionsContainer");
 const filloutForm = document.getElementById("filloutForm");
 
-// Get form ID from URL parameters or use default
+// Get form ID from URL parameters or show error
 function getFormId() {
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get("id") || "default-form-id";
+  const formId = urlParams.get("id");
+
+  console.log("🔍 URL search params:", window.location.search);
+  console.log("🆔 Extracted form ID:", formId);
+
+  if (!formId) {
+    console.error("❌ No form ID found in URL parameters");
+    return null;
+  }
+
+  return formId;
 }
 
-// Load form data (using mock data for now)
+// Load form data from API
 async function loadFormData(id) {
   try {
     console.log("🔄 Loading form data for ID:", id);
 
-    // TODO: Replace with real API call
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const response = await fetch(`${API_BASE_URL}/api/forms/${id}`);
 
-    // TODO: In real implementation, this would be:
-    // const response = await fetch(`${API_BASE_URL}/forms/${id}`);
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-    // const formData = await response.json();
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(
+          `Form not found. The form with ID "${id}" does not exist.`
+        );
+      } else if (response.status === 400) {
+        throw new Error(
+          `Invalid form ID format. Please check the form ID in the URL.`
+        );
+      } else {
+        throw new Error(
+          `Failed to load form: ${response.status} ${response.statusText}`
+        );
+      }
+    }
 
-    // TODO: For demo purposes, use mock data
-    const formData = MOCK_FORM_DATA;
+    const formData = await response.json();
+
     console.log("✅ Form data loaded:", formData);
     return formData;
   } catch (error) {
@@ -172,7 +117,7 @@ function renderQuestions(questions) {
         questionHtml += "</div>";
         break;
 
-      case "multiple_select":
+      case "multiselect":
         questionHtml += '<div class="option-group">';
         question.options.forEach((option) => {
           questionHtml += `
@@ -237,7 +182,7 @@ function collectAnswers() {
         }
         break;
 
-      case "multiple_select":
+      case "multiselect":
         const checkboxes = document.querySelectorAll(
           `input[name="question_${questionId}"]:checked`
         );
@@ -265,25 +210,21 @@ async function submitFormAnswers(formId, answers) {
     const payload = { answers };
     console.log("📦 Payload to submit:", JSON.stringify(payload, null, 2));
 
-    // TODO: Replace with real API call
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const response = await fetch(
+      `${API_BASE_URL}/api/forms/${formId}/answers`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-    // TODO: In real implementation, this would be:
-    // const response = await fetch(`${API_BASE_URL}/forms/${formId}/answers`, {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(payload)
-    // });
-    // if (!response.ok) {
-    //   throw new Error(`HTTP error! status: ${response.status}`);
-    // }
-
-    // TODO: For demo purposes, just log the submission
     console.log("✅ Form submitted successfully!");
-    console.log("🎉 Mock submission completed for demo purposes");
     return true;
   } catch (error) {
     console.error("❌ Error submitting form:", error);
@@ -314,6 +255,13 @@ function showSuccess() {
 async function initializeForm() {
   try {
     formId = getFormId();
+
+    if (!formId) {
+      throw new Error(
+        "No form ID provided in URL. Please access this page with a valid form ID parameter (e.g., ?id=form-uuid)"
+      );
+    }
+
     console.log("🚀 Initializing fillout form for ID:", formId);
 
     // Load form data
@@ -329,7 +277,8 @@ async function initializeForm() {
 
     console.log("✅ Form initialization completed");
   } catch (error) {
-    showError("Failed to load form. Please try again later.");
+    console.error("❌ Form initialization error:", error);
+    showError(error.message || "Failed to load form. Please try again later.");
   }
 }
 
@@ -365,12 +314,18 @@ filloutForm.addEventListener("submit", async (e) => {
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   console.log("🌟 DOM loaded, initializing form fillout page");
+  console.log("🌐 Current URL:", window.location.href);
+  console.log("🔍 Current search params:", window.location.search);
+
+  // Additional debugging for URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  console.log("📋 All URL parameters:");
+  for (const [key, value] of urlParams.entries()) {
+    console.log(`   ${key}: ${value}`);
+  }
+
   initializeForm();
 });
 
-// Log mock data for reference
-console.log("📋 Mock form data structure:", MOCK_FORM_DATA);
-console.log(
-  "🔧 TODO: Replace mock data with real API calls to:",
-  API_BASE_URL + "/forms/{id}"
-);
+// Log API configuration
+console.log("🔧 Using real API calls to:", API_BASE_URL + "/api/forms/{id}");
